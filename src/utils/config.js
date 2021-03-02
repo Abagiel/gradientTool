@@ -1,0 +1,1 @@
+export const selector = '[data-gradient="gradienT"]';
