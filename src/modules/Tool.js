@@ -1,7 +1,16 @@
 import GradientBlock from './GradientBlock.js';
+
 import selectGradientOptions from './templates/templates.js';
 import { selector } from '../utils/config.js';
-import { GRADIENT_LINEAR, CIRCLE_SHAPE } from '../utils/constants.js';
+import { linearGradientStyle, radialGradientStyle } from '../utils/functions.js';
+import { 
+	GRADIENT_LINEAR, 
+	CIRCLE_SHAPE,
+	RADIAL_SHAPE_ID,
+	GRADIENT_TYPE_ID,
+	RADIAL_X,
+	RADIAL_Y
+} from '../utils/constants.js';
 
 export default class Tool {
 	constructor() {
@@ -30,12 +39,24 @@ export default class Tool {
 	}
 
 	renderChildern() {
+		this.clearRoot();
+		this.insertRootHTML(selectGradientOptions(this.options));
+
+		this.gradients.forEach(g => this.insertRootHTML(g.render()));
+	}
+
+	renderElements() {
+		this.elements.forEach(el => {
+			el.style.backgroundImage = this.createGradient();
+		})
+	}
+
+	insertRootHTML(html) {
+		this.root.insertAdjacentHTML('beforeend', html);
+	}
+
+	clearRoot() {
 		this.root.innerHTML = '';
-		
-		this.root.insertAdjacentHTML('beforeend', selectGradientOptions(this.options));
-		this.gradients.forEach(g => {
-			this.root.insertAdjacentHTML('beforeend', g.render());
-		});
 	}
 
 	createRoot() {
@@ -50,18 +71,18 @@ export default class Tool {
 	}
 
 	createGradient() {
-		const { type, angle, shape, x, y } = this.options;
 		let gradient = '';
+		const { type, angle, shape, x, y } = this.options;
 
 		this.gradients.forEach(g => {
 			gradient += ', ' + g.color + ' ' + g.number + '%';
 		})
 
 		if (type === GRADIENT_LINEAR) {
-			return `${type}(${angle}deg${gradient})`;
+			return linearGradientStyle(type, angle, gradient);
 		}
 
-		return `${type}(${shape} at ${x}% ${y}%${gradient})`;
+		return radialGradientStyle(type, shape, x, y, gradient);
 	}
 
 	clickHandler(e) {
@@ -71,48 +92,33 @@ export default class Tool {
 		this.renderChildern();
 	}
 
+	changeGradientAngle(idx, value){
+		const coord = idx.split('-')[1];
+
+		this.options[coord] = value;
+	}
+
 	inputHandler(e) {
-		if (e.target.id === 'radial-x') {
-			this.options.x = e.target.value;
-			this.elements.forEach(el => {
-				el.style.backgroundImage = this.createGradient();
-			})
-			return;
+		if (e.target.dataset.line) {
+			this.changeGradientAngle(e.target.id, e.target.value);
 		}
-		if (e.target.id === 'radial-y') {
-			this.options.y = e.target.value;
-			this.elements.forEach(el => {
-				el.style.backgroundImage = this.createGradient();
-			})
-			return;
-		}
-		if (e.target.id === 'gradient-type') {
+
+		if (e.target.id === GRADIENT_TYPE_ID) {
 			this.options.type = e.target.value;
 			this.renderChildern();
-			return;
 		}
 
-		if (e.target.id === 'radial-shape') {
+		if (e.target.id === RADIAL_SHAPE_ID) {
 			this.options.shape = e.target.value;
-			this.elements.forEach(el => {
-				el.style.backgroundImage = this.createGradient();
-			})
-			return;
 		}
 
-		if (e.target.type === 'range') {
-			this.options.angle = e.target.value;
-			this.elements.forEach(el => {
-				el.style.backgroundImage = this.createGradient();
-			})
-			return;
-		}
-		const id = +e.target.dataset.gradient;
-		const type = e.target.type;
+		if (e.target.dataset.gradient) {
+			const id = +e.target.dataset.gradient;
+			const type = e.target.type;
 
-		this.gradients[id][type] = e.target.value;
-		this.elements.forEach(el => {
-				el.style.backgroundImage = this.createGradient();
-		})
+			this.gradients[id][type] = e.target.value;
+		}
+
+		this.renderElements();
 	}
 }

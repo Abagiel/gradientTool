@@ -1,0 +1,104 @@
+::-moz-color-swatch {
+	border: none !important;
+}
+
+#gradienT * {
+	box-sizing: border-box;
+}
+
+#gradienT {
+	position: fixed;
+	right: 0;
+	top: 0;
+
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	height: 100vh;
+	padding: 10px;
+	width: 300px;
+
+	border: 3px solid hsl(140 50% 40%);
+	overflow-y: scroll;
+}
+
+#gradienT button {
+	padding: 10px 20px;
+
+	background: #fff;
+	border: 2px solid hsl(0 0% 85%);
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 18px;
+	text-align: center;
+	text-transform: capitalize;
+	transition: color .3s, background .3s;
+}
+#gradienT button:hover {
+	background: hsl(140 50% 40%);
+	color: #fff;
+}
+
+#gradienT select {
+	padding: 5px 10px;
+
+	border: 2px solid hsl(0 0% 85%);
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+#gradienT > form {
+	display: flex;
+	gap: 10px;
+}
+
+#gradienT input[type="number"] {
+	flex: 1;
+	padding: 5px 10px;
+	width: 100%;
+
+	border: 2px solid hsl(0 0% 85%);
+	border-radius: 5px;
+	font-size: 18px;
+	text-align: center;
+}
+
+#gradienT input[type="color"] {
+	flex: 2;
+	height: auto;
+	padding: 0;
+
+	border: 2px solid hsl(0 0% 85%);
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+#gradienT input[type="range"] {
+	margin-bottom: 15px;
+	margin-top: 10px;
+}
+
+#gradienT input[type="range"]::-moz-range-track {
+	height: 16px;
+
+	background: hsl(0 0% 85%);
+	border-radius: 5px;
+}
+
+#gradienT input[type="range"]::-moz-range-thumb {
+	height: 24px;
+	width: 8px;
+
+	background: hsl(140 50% 40%);
+	cursor: pointer;
+}
+
+#gradienT input[type="number"] {
+	appearance: textfield;
+}
+#gradienT input[type="number"]:hover,
+#gradienT input[type="number"]:focus {
+	appearance: number-input;
+}

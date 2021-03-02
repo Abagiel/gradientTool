@@ -1,7 +1,7 @@
 export default class GradientBlock {
 	constructor(id) {
 		this.id = id;
-		this.color = '#fff';
+		this.color = '#ffffff';
 		this.number = 0;
 	}
 
