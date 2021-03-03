@@ -3,9 +3,11 @@ export const RADIAL_SHAPE_ID = 'radial-shape';
 
 
 export const GRADIENT_LINEAR = 'linear-gradient';
-
-
+export const GRADIENT_LINEAR_R = 'repeating-linear-gradient';
 export const GRADIENT_RADIAL = 'radial-gradient';
+export const GRADIENT_RADIAL_R = 'repeating-radial-gradient';
+
+
 export const RADIAL_X = 'radial-x';
 export const RADIAL_Y = 'radial-y';
 

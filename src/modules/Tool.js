@@ -5,12 +5,14 @@ import { selector } from '../utils/config.js';
 import { linearGradientStyle, radialGradientStyle } from '../utils/functions.js';
 import { 
 	GRADIENT_LINEAR, 
+	GRADIENT_LINEAR_R,
 	CIRCLE_SHAPE,
 	RADIAL_SHAPE_ID,
 	GRADIENT_TYPE_ID,
 	RADIAL_X,
 	RADIAL_Y
 } from '../utils/constants.js';
+
 
 export default class Tool {
 	constructor() {
@@ -23,7 +25,12 @@ export default class Tool {
 			type: GRADIENT_LINEAR,
 			shape: CIRCLE_SHAPE,
 			x: 0,
-			y: 0
+			y: 0,
+			repeat: 'repeat',
+			'bg-h': '',
+			'bg-w': '',
+			'bg-x': '',
+			'bg-y': ''
 		};
 	}
 
@@ -48,6 +55,9 @@ export default class Tool {
 	renderElements() {
 		this.elements.forEach(el => {
 			el.style.backgroundImage = this.createGradient();
+			el.style.backgroundSize = `${this.options['bg-w']}px ${this.options['bg-h']}px`;
+			el.style.backgroundPosition = `${this.options['bg-x']}px ${this.options['bg-y']}px`;
+			el.style.backgroundRepeat = this.options.repeat;
 		})
 	}
 
@@ -69,6 +79,9 @@ export default class Tool {
 
 		return this;
 	}
+	removeGradient(id) {
+		this.gradients = this.gradients.filter(gr => gr.id !== id);
+	}
 
 	createGradient() {
 		let gradient = '';
@@ -78,7 +91,7 @@ export default class Tool {
 			gradient += ', ' + g.color + ' ' + g.number + '%';
 		})
 
-		if (type === GRADIENT_LINEAR) {
+		if (type === GRADIENT_LINEAR || type === GRADIENT_LINEAR_R) {
 			return linearGradientStyle(type, angle, gradient);
 		}
 
@@ -86,10 +99,19 @@ export default class Tool {
 	}
 
 	clickHandler(e) {
-		if (e.target.id !== 'add-gradient') return;
+		if (e.target.tagName !== 'BUTTON') return;
+		if (e.target.id === 'add-color') {
+			this.addGradient();
+		}
 
-		this.addGradient();
+		if (e.target.id === 'remove-color') {
+			const id = +e.target.dataset.gradient;
+
+			this.removeGradient(id);
+		}
+
 		this.renderChildern();
+		this.renderElements();
 	}
 
 	changeGradientAngle(idx, value){
@@ -99,7 +121,7 @@ export default class Tool {
 	}
 
 	inputHandler(e) {
-		if (e.target.dataset.line) {
+		if (e.target.dataset.range) {
 			this.changeGradientAngle(e.target.id, e.target.value);
 		}
 
@@ -112,11 +134,23 @@ export default class Tool {
 			this.options.shape = e.target.value;
 		}
 
+		if (e.target.dataset.number) {
+			this.options[e.target.dataset.number] = e.target.value;
+		}
+
+		if (e.target.id === 'bg-repeat') {
+			this.options.repeat = e.target.value;
+		}
+
 		if (e.target.dataset.gradient) {
 			const id = +e.target.dataset.gradient;
 			const type = e.target.type;
 
-			this.gradients[id][type] = e.target.value;
+			this.gradients.forEach(gr => {
+				if (gr.id === id) {
+					gr[type] = e.target.value;
+				}
+			});
 		}
 
 		this.renderElements();
