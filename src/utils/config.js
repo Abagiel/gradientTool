@@ -12,6 +12,9 @@ export function options() {
 		bgh: null,
 		bgw: null,
 		bgx: null,
-		bgy: null
+		bgy: null,
+		deg: 0,
+		cx: 0,
+		cy: 0
 	};
 }

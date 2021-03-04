@@ -16,6 +16,7 @@
 	flex-direction: column;
 	gap: 10px;
 	height: 100vh;
+	padding-bottom: 10px;
 	width: 300px;
 
 	border: 3px solid hsl(140 50% 40%);
@@ -27,7 +28,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	height: 100%;
+	height: auto;
 	padding: 10px;
 	width: 100%;
 
@@ -73,10 +74,19 @@
 	font-size: 18px;
 }
 
-#gradienT > div > form {
+#gradienT form {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 10px;
 }
+
+#gradienT #color-block {
+	height: auto;
+	width: auto;
+
+	border: none;
+}
+
 #gradienT #remove-color {
 	flex: 1;
 
@@ -123,6 +133,7 @@
 #gradienT input[type="range"] {
 	margin-bottom: 15px;
 	margin-top: 10px;
+	min-width: 100%;
 }
 
 #gradienT input[type="range"]::-moz-range-track {
@@ -147,3 +158,4 @@
 #gradienT input[type="number"]:focus {
 	appearance: number-input;
 }
+

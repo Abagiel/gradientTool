@@ -1,8 +1,8 @@
 import ColorBlock from './ColorBlock.js';
 import { options } from '../utils/config.js';
 import selectGradientOptions from './templates/templates.js';
-import { toCamelCase, linearGradientStyle, radialGradientStyle } from '../utils/functions.js';
-import { GRADIENT_LINEAR, GRADIENT_LINEAR_R } from '../utils/constants.js';
+import { toCamelCase, linearGradientStyle, radialGradientStyle, conicGradientStyle } from '../utils/functions.js';
+import { GRADIENT_LINEAR, GRADIENT_LINEAR_R, GRADIENT_CONIC, GRADIENT_CONIC_R } from '../utils/constants.js';
 
 export default class GradientBlock {
 	constructor(root, tool) {
@@ -48,7 +48,7 @@ export default class GradientBlock {
 
 	createGradient() {
 		let gradient = '';
-		const { type, angle, shape, x, y } = this.options;
+		const { type, angle, shape, x, y, deg, cx, cy } = this.options;
 
 		this.colors.forEach(g => {
 			gradient += ', ' + g.color + ' ' + g.number + '%';
@@ -56,6 +56,10 @@ export default class GradientBlock {
 
 		if (type === GRADIENT_LINEAR || type === GRADIENT_LINEAR_R) {
 			return linearGradientStyle(type, angle, gradient);
+		}
+
+		if (type === GRADIENT_CONIC || type === GRADIENT_CONIC_R) {
+			return conicGradientStyle(type, deg, cx, cy, gradient);
 		}
 
 		return radialGradientStyle(type, shape, x, y, gradient);

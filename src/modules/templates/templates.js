@@ -2,15 +2,15 @@ import { createH4 } from './headings.js';
 import { addGradientBtn, addColorBtn } from './buttons.js';
 import { createInputNumber, createInputRange } from './inputs.js';
 import { backgroundRepeatSelect, gradientTypeSelect, radialShapeSelect } from './select.js';
-import { backgroundSizeForm, backgroundPositionForm } from './forms.js';
-import { GRADIENT_LINEAR, GRADIENT_RADIAL, GRADIENT_LINEAR_R, GRADIENT_RADIAL_R, RADIAL_Y, RADIAL_X} from '../../utils/constants.js';
+import { backgroundSizeForm, backgroundPositionForm, conicOptionsForm } from './forms.js';
+import { GRADIENT_LINEAR, GRADIENT_RADIAL, GRADIENT_LINEAR_R, GRADIENT_RADIAL_R, RADIAL_Y, RADIAL_X, GRADIENT_CONIC, GRADIENT_CONIC_R} from '../../utils/constants.js';
 
 
-function backgroundSize({ 'bg-h': h, 'bg-w': w }) {
+function backgroundSize({ 'bgh': h, 'bgw': w }) {
 	return createH4('Background Size') + backgroundSizeForm(h, w);
 }
 
-function backgroundPosition({ 'bg-x': x, 'bg-y': y }) {
+function backgroundPosition({ 'bgx': x, 'bgy': y }) {
 	return createH4('Background Position') + backgroundPositionForm(x, y);
 }
 
@@ -34,6 +34,10 @@ function radialGradienOptions({ shape, x, y }) {
 	return radialShapeSelect(shape) + coordLineX + coordLineY;
 }
 
+function conicGradientOptions({ deg, cx, cy }) {
+	return conicOptionsForm(deg, cx, cy);
+}
+
 function commonOptions(props) {
 	return addColorBtn + backgroundOptions(props);
 }
@@ -42,7 +46,9 @@ const gradientTypes = {
 	[GRADIENT_LINEAR]: linearGradientOptions,
 	[GRADIENT_LINEAR_R]: linearGradientOptions,
 	[GRADIENT_RADIAL]: radialGradienOptions,
-	[GRADIENT_RADIAL_R]: radialGradienOptions
+	[GRADIENT_RADIAL_R]: radialGradienOptions,
+	[GRADIENT_CONIC]: conicGradientOptions,
+	[GRADIENT_CONIC_R]: conicGradientOptions
 };
 
 function selectGradientOptions(props) {

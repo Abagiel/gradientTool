@@ -1,4 +1,4 @@
-import { createInputNumber } from './inputs.js';
+import { createInputNumber, createInputRange } from './inputs.js';
 
 
 const createForm = (content) => `<form>${content}</form>`;
@@ -15,6 +15,15 @@ export function backgroundPositionForm(x, y) {
 	const inputs = `
 		${createInputNumber(x, 'X', 'bgx', '0')}
 		${createInputNumber(y, 'Y', 'bgy', '0')}`;
+
+	return createForm(inputs);
+}
+
+export function conicOptionsForm(deg, cx, cy) {
+	const inputs = `
+		${createInputRange(deg, 'deg', '0', 360)}
+		${createInputNumber(cx, 'X', 'cx', '0', null)}
+		${createInputNumber(cy, 'Y', 'cy', '0', null)}`;
 
 	return createForm(inputs);
 }

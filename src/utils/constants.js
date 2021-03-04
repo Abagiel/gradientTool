@@ -7,6 +7,9 @@ export const GRADIENT_LINEAR_R = 'repeating-linear-gradient';
 export const GRADIENT_RADIAL = 'radial-gradient';
 export const GRADIENT_RADIAL_R = 'repeating-radial-gradient';
 
+export const GRADIENT_CONIC = 'conic-gradient';
+export const GRADIENT_CONIC_R = 'repeating-conic-gradient';
+
 
 export const RADIAL_X = 'radial-x';
 export const RADIAL_Y = 'radial-y';

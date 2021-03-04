@@ -13,7 +13,6 @@ function createInput(type, options) {
 }
 
 export function createInputNumber(value, placeholder, data, min, max, id) {
-
 	return createInput('number', { 
 		value, 
 		placeholder, 

@@ -1,9 +1,13 @@
-export function linearGradientStyle(type, angle, gradient) {
-	return `${type}(${angle}deg${gradient})`;	
+export function linearGradientStyle(type, angle, colors) {
+	return `${type}(${angle}deg${colors})`;	
 }
 
-export function radialGradientStyle(type, shape, x, y, gradient) {
-	return `${type}(${shape} at ${x}% ${y}%${gradient})`;
+export function radialGradientStyle(type, shape, x, y, colors) {
+	return `${type}(${shape} at ${x}% ${y}%${colors})`;
+}
+
+export function conicGradientStyle(type, angle, x, y, colors) {
+	return `${type}(from ${angle}deg at ${x}px ${y}px${colors})`;
 }
 
 function capitalize(str) {
