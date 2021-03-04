@@ -14,7 +14,15 @@ function createInput(type, options) {
 
 export function createInputNumber(value, placeholder, data, min, max, id) {
 
-	return createInput('number', { value, placeholder, min, 'data-number': data, min, max, id  });
+	return createInput('number', { 
+		value, 
+		placeholder, 
+		min, 
+		'data-number': data, 
+		min, 
+		max, 
+		id  
+	});
 }
 
 export function createInputRange(value, data, min, max, id ) {

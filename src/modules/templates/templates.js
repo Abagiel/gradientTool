@@ -1,98 +1,41 @@
-import { addGradientBtn } from './buttons.js';
+import { createH4 } from './headings.js';
+import { addGradientBtn, addColorBtn } from './buttons.js';
 import { createInputNumber, createInputRange } from './inputs.js';
-import { 
-	GRADIENT_LINEAR, 
-	GRADIENT_RADIAL,
-	GRADIENT_LINEAR_R,
-	GRADIENT_RADIAL_R, 
-	ELLIPSE_SHAPE, 
-	CIRCLE_SHAPE,
-	RADIAL_Y,
-	RADIAL_X,
-	GRADIENT_TYPE_ID,
-	RADIAL_SHAPE_ID
-} from '../../utils/constants.js';
+import { backgroundRepeatSelect, gradientTypeSelect, radialShapeSelect } from './select.js';
+import { backgroundSizeForm, backgroundPositionForm } from './forms.js';
+import { GRADIENT_LINEAR, GRADIENT_RADIAL, GRADIENT_LINEAR_R, GRADIENT_RADIAL_R, RADIAL_Y, RADIAL_X} from '../../utils/constants.js';
 
 
-function backgroundSize(props) {
-	const h = props['bg-h'];
-	const w = props['bg-w'];
-
-	return `
-		<h4>Background Size</h4>
-		<form>
-			${createInputNumber(h, 'Height', 'bg-h', '0')}
-			${createInputNumber(w, 'Width', 'bg-w', '0')}
-		</form>
-	`;
+function backgroundSize({ 'bg-h': h, 'bg-w': w }) {
+	return createH4('Background Size') + backgroundSizeForm(h, w);
 }
-function backgroundPosition(props) {
-	const x = props['bg-x'];
-	const y = props['bg-y'];
 
-	return `
-		<h4>Background Position</h4>
-		<form>
-			${createInputNumber(x, 'X', 'bg-x', '0')}
-			${createInputNumber(y, 'Y', 'bg-y', '0')}
-		</form>
-	`;
+function backgroundPosition({ 'bg-x': x, 'bg-y': y }) {
+	return createH4('Background Position') + backgroundPositionForm(x, y);
 }
+
 function backgroundRepeat(props) {
-	const type = props.repeat;
-
-	return `
-		<h4>Background Repeat</h4>
-		<select id="bg-repeat">
-			${createOption('Repeat', 'repeat', type)}
-			${createOption('Repeat X', 'repeat-x', type)}
-			${createOption('Repeat Y', 'repeat-y', type)}
-			${createOption('Revert', 'revert', type)}
-			${createOption('Round', 'round', type)}
-			${createOption('Space', 'space', type)}
-			${createOption('No Repeat', 'no-repeat', type)}
-		</select>
-	`;
+	return createH4('Background Repeat') + backgroundRepeatSelect(props.repeat);
 }
 
-const linearGradientOptions = ({ angle }) => createInputRange(angle, 'angle', 0, 360, 'linear-angle' );
+function backgroundOptions(props) {
+	return backgroundSize(props) + backgroundPosition(props) + backgroundRepeat(props);
+}
 
-const radialGradienOptions = ({ shape, x, y }) => {
+
+function linearGradientOptions({ angle }) {
+	return createInputRange(angle, 'angle', 0, 360, 'linear-angle' );
+} 
+
+function radialGradienOptions({ shape, x, y }) {
 	const coordLineX = createInputRange(x, 'x', 0, 100, RADIAL_X);
 	const coordLineY = createInputRange(y, 'y', 0, 100, RADIAL_Y); 
 
-	return selectRadialShape(shape) + coordLineX + coordLineY;
-}
-
-function createOption(content, value, ie) {
-	const selected = ie === value ? 'selected' : '';
-
-	return `<option ${selected} value="${value}">${content}</option>`
-}
-
-function selectGradientType(type) {
-	return `
-		<h4>Select Gradient Type</h4>
-		<select id="${GRADIENT_TYPE_ID}" >
-			${createOption('Linear', GRADIENT_LINEAR, type)}
-			${createOption('Radial', GRADIENT_RADIAL, type)}
-			${createOption('Repeat Radial', GRADIENT_RADIAL_R, type)}
-			${createOption('Repeat Linear', GRADIENT_LINEAR_R, type)}
-		</select>
-	`;
-}
-function selectRadialShape(shape) {
-	return `
-		<h4>Select Shape</h4>
-		<select id="${RADIAL_SHAPE_ID}" >
-			${createOption('Circle', CIRCLE_SHAPE, shape)}
-			${createOption('Ellipse', ELLIPSE_SHAPE, shape)}
-		</select>
-	`;
+	return radialShapeSelect(shape) + coordLineX + coordLineY;
 }
 
 function commonOptions(props) {
-	return addGradientBtn + backgroundSize(props) + backgroundPosition(props) + backgroundRepeat(props);
+	return addColorBtn + backgroundOptions(props);
 }
 
 const gradientTypes = {
@@ -106,7 +49,7 @@ function selectGradientOptions(props) {
 	const type = props.type;
 	const options = gradientTypes[type](props);
 
-	return commonOptions(props) + selectGradientType(type) + options;
+	return commonOptions(props) + gradientTypeSelect(type) + options;
 }
 
 export default selectGradientOptions;

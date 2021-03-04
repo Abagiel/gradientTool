@@ -1,3 +1,4 @@
 import Tool from './modules/Tool.js';
+import Test from './modules/Test.js';
 
-new Tool().init();
+new Test().init();

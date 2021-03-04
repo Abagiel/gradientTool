@@ -1,7 +1,7 @@
-import GradientBlock from './GradientBlock.js';
+import ColorBlock from './ColorBlock.js';
 
 import selectGradientOptions from './templates/templates.js';
-import { selector } from '../utils/config.js';
+import { selector, options } from '../utils/config.js';
 import { linearGradientStyle, radialGradientStyle } from '../utils/functions.js';
 import { 
 	GRADIENT_LINEAR, 
@@ -18,20 +18,9 @@ export default class Tool {
 	constructor() {
 		this.root = document.createElement('div');
 		this.id = -1;
-		this.gradients = [];
+		this.colors = [];
 		this.elements = Array.from(document.querySelectorAll(selector));
-		this.options = {
-			angle: 0,
-			type: GRADIENT_LINEAR,
-			shape: CIRCLE_SHAPE,
-			x: 0,
-			y: 0,
-			repeat: 'repeat',
-			'bg-h': '',
-			'bg-w': '',
-			'bg-x': '',
-			'bg-y': ''
-		};
+		this.options = options;
 	}
 
 	init() {
@@ -49,7 +38,7 @@ export default class Tool {
 		this.clearRoot();
 		this.insertRootHTML(selectGradientOptions(this.options));
 
-		this.gradients.forEach(g => this.insertRootHTML(g.render()));
+		this.colors.forEach(g => this.insertRootHTML(g.render()));
 	}
 
 	renderElements() {
@@ -75,19 +64,19 @@ export default class Tool {
 	}
 
 	addGradient() {
-		this.gradients.push(new GradientBlock(++this.id));
+		this.colors.push(new ColorBlock(++this.id));
 
 		return this;
 	}
 	removeGradient(id) {
-		this.gradients = this.gradients.filter(gr => gr.id !== id);
+		this.colors = this.colors.filter(gr => gr.id !== id);
 	}
 
 	createGradient() {
 		let gradient = '';
 		const { type, angle, shape, x, y } = this.options;
 
-		this.gradients.forEach(g => {
+		this.colors.forEach(g => {
 			gradient += ', ' + g.color + ' ' + g.number + '%';
 		})
 
@@ -146,7 +135,7 @@ export default class Tool {
 			const id = +e.target.dataset.gradient;
 			const type = e.target.type;
 
-			this.gradients.forEach(gr => {
+			this.colors.forEach(gr => {
 				if (gr.id === id) {
 					gr[type] = e.target.value;
 				}
