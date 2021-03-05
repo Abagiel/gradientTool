@@ -3,4 +3,4 @@ function createButton(idx, text) {
 }
 
 export const addColorBtn = createButton('add-color', 'Add Color');
-export const addGradientBtn = createButton('add-gradient', 'Add Gradient');
+export const removeGradient = createButton('remove-gradient', 'Remove Gradient');

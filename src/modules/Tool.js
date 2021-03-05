@@ -15,18 +15,27 @@ export default class Test {
 	}
 
 	addGradient() {
-		this.clearRoot(this.root);
-		this.gradients.push(new GradientBlock(this.addContainer(), this));
+		const root = this.addContainer();
+
+		this.gradients.push(new GradientBlock(root, this));
 		this.initGradients();
+	}
+
+	removeGradient(id) {
+		this.removeContainer(id);
+		this.gradients = this.gradients.filter(g => g._id !== id);
 	}
 
 	addContainer() {
 		const container = document.createElement('div');
-		container.id = ++this.id;
+		container.id = 'con-' + ++this.id;
 
 		this.root.append(container);
 
 		return container;
+	}
+	removeContainer(id) {
+		document.querySelector(`#${id}`).remove();
 	}
 
 	initGradients() {
@@ -34,6 +43,12 @@ export default class Test {
 	}
 
 	createRoot() {
+		const addGradientBtn = document.createElement('button');
+		addGradientBtn.id = 'add-gradient';
+		addGradientBtn.textContent = 'Add Gradient';
+
+		this.root.append(addGradientBtn);
+		this.addEvent([['click', this.addGradient.bind(this)]], addGradientBtn);
 		this.root.id = 'gradienT';
 		document.body.append(this.root);
 	}
@@ -46,12 +61,11 @@ export default class Test {
 		root.insertAdjacentHTML('beforeend', html);
 	}
 
-	addEvent(events) {
-		events
-		 .forEach(e => this.root.addEventListener(e[0], e[1]));
+	addEvent(events, root) {
+		events.forEach(e => root.addEventListener(e[0], e[1]));
 	}
 
-	renderElements({ bgw, bgh, bgx, bgy, repeat }, fn) {
+	renderElements({ bgw, bgh, bgx, bgy, repeat }, fn) {		
 		this.elements.forEach(el => {
 			el.style.backgroundImage = fn();
 			el.style.backgroundSize = `${bgw}px ${bgh}px`;

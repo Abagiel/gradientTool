@@ -1,34 +1,50 @@
 import ColorBlock from './ColorBlock.js';
-import { options } from '../utils/config.js';
+import { options, colorsOptions } from '../utils/config.js';
 import selectGradientOptions from './templates/templates.js';
-import { toCamelCase, linearGradientStyle, radialGradientStyle, conicGradientStyle } from '../utils/functions.js';
-import { GRADIENT_LINEAR, GRADIENT_LINEAR_R, GRADIENT_CONIC, GRADIENT_CONIC_R } from '../utils/constants.js';
+import { toCamelCase, mergeColors } from '../utils/functions.js';
+import typesHandler from '../utils/typesHandler.js';
 
 export default class GradientBlock {
 	constructor(root, tool) {
+		this._id = 'con-' + tool.id;
 		this.tool = tool;
 		this.root = root;
 		this.id = -1;
 		this.colors = [];
+		this.colorsOptions = [];
 		this.options = options();
 		this.elements = tool.elements;
+		this.isInit = false;
 	}
 
 	init() {
+		this.clearColors();
 		this.addColor();
 		this.addColor();
 
-		this.tool.addEvent([
-			['input', this.inputHandler.bind(this)],
-			['click', this.clickHandler.bind(this)],
-			['submit', e => e.preventDefault()]
-		]);
+		if (!this.isInit) {
+			this.tool.addEvent([
+				['input', this.inputHandler.bind(this)],
+				['click', this.clickHandler.bind(this)],
+				['submit', e => e.preventDefault()]
+			], this.root);
+			this.isInit = true;
+		}
 
 		this.renderChildern();
 	}
 
+	clearColors() {
+		this.colors = [];
+		this.id = -1;
+	}
+
 	addColor() {
-		this.colors.push(new ColorBlock(++this.id));
+		if (!this.colorsOptions[this.id + 1]) {
+			this.colorsOptions.push(colorsOptions());
+		}
+		
+		this.colors.push(new ColorBlock(++this.id, this.colorsOptions[this.id]));
 	}
 
 	renderChildern() {
@@ -46,23 +62,21 @@ export default class GradientBlock {
 		this.colors = this.colors.filter(gr => gr.id !== id);
 	}
 
+	removeGradient() {
+		this.tool.removeGradient(this._id);
+	}
+
 	createGradient() {
-		let gradient = '';
-		const { type, angle, shape, x, y, deg, cx, cy } = this.options;
+		let gradients = '';
 
-		this.colors.forEach(g => {
-			gradient += ', ' + g.color + ' ' + g.number + '%';
-		})
+		this.tool.gradients.forEach(g => {
+			const type = g.options.type;
+			const colors = mergeColors(g.colors);
 
-		if (type === GRADIENT_LINEAR || type === GRADIENT_LINEAR_R) {
-			return linearGradientStyle(type, angle, gradient);
-		}
+			gradients += typesHandler[type](g.options, colors);
+		});
 
-		if (type === GRADIENT_CONIC || type === GRADIENT_CONIC_R) {
-			return conicGradientStyle(type, deg, cx, cy, gradient);
-		}
-
-		return radialGradientStyle(type, shape, x, y, gradient);
+		return gradients.slice(1);
 	}
 
 	changeOptions(idx, value){
@@ -90,9 +104,14 @@ export default class GradientBlock {
 
 		if (e.target.dataset.gradient) {
 			const idx = +e.target.dataset.gradient;
-			const type = e.target.type;
+			const type = e.target.dataset.color;
 
-			this.colors.forEach(gr => gr.id === idx ? gr[type] = value : null);
+			this.colors.forEach((col, id) => {
+				if (col.id === idx) {
+					col[type] = value;
+					this.colorsOptions[id][type] = value;
+				}
+			});
 		}
 
 		if (dataset) {

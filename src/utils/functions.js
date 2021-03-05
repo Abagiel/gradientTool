@@ -1,13 +1,22 @@
-export function linearGradientStyle(type, angle, colors) {
-	return `${type}(${angle}deg${colors})`;	
+export function linearGradientStyle({type, angle}, colors) {
+	return `,${type}(${angle}deg${colors})`;	
 }
 
-export function radialGradientStyle(type, shape, x, y, colors) {
-	return `${type}(${shape} at ${x}% ${y}%${colors})`;
+export function radialGradientStyle({type, shape, x, y}, colors) {
+	return `,${type}(${shape} at ${x}% ${y}%${colors})`;
 }
 
-export function conicGradientStyle(type, angle, x, y, colors) {
-	return `${type}(from ${angle}deg at ${x}px ${y}px${colors})`;
+export function conicGradientStyle({type, deg, cx, cy}, colors) {
+	return `,${type}(from ${deg}deg at ${cx}px ${cy}px${colors})`;
+}
+
+
+function hexToRGBA(color, opacity) {
+	const r = +parseInt(color.substr(1, 2), 16);
+	const g = +parseInt(color.substr(3, 2), 16);
+	const b = +parseInt(color.substr(5, 2), 16);
+
+	return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
 function capitalize(str) {
@@ -20,4 +29,14 @@ export function toCamelCase(str) {
 	const strArr = str.split('-');
 
 	return strArr[0] + capitalize(strArr[1]); 
+}
+
+export function mergeColors(colorsArr) {
+	let colorsStr = '';
+
+	colorsArr.forEach(c => {
+		colorsStr += ', ' + hexToRGBA(c.color, c.opacity) + ' ' + c.degree + '%';
+	});
+
+	return colorsStr;
 }

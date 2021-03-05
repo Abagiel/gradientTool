@@ -1,5 +1,5 @@
 import { createH4 } from './headings.js';
-import { addGradientBtn, addColorBtn } from './buttons.js';
+import { addColorBtn, removeGradient } from './buttons.js';
 import { createInputNumber, createInputRange } from './inputs.js';
 import { backgroundRepeatSelect, gradientTypeSelect, radialShapeSelect } from './select.js';
 import { backgroundSizeForm, backgroundPositionForm, conicOptionsForm } from './forms.js';
@@ -39,7 +39,8 @@ function conicGradientOptions({ deg, cx, cy }) {
 }
 
 function commonOptions(props) {
-	return addColorBtn + backgroundOptions(props);
+	const btns = `<div>${removeGradient + addColorBtn}</div>`
+	return btns + backgroundOptions(props);
 }
 
 const gradientTypes = {
