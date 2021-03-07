@@ -25,7 +25,7 @@ export function backgroundRepeatSelect(type) {
 		${createOption('Space', 'space', type)}
 		${createOption('No Repeat', 'no-repeat', type)}`;
 	
-	return createSelect('bg-repeat', options);
+	return createH4('Background Repeat') + createSelect('bg-repeat', options);
 }
 
 export function gradientTypeSelect(type) {

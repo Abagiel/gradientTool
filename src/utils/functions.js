@@ -40,3 +40,19 @@ export function mergeColors(colorsArr) {
 
 	return colorsStr;
 }
+
+const toTwoValue = (v) => isNaN(+v) ? v + ' ' : v + 'px ';
+
+export function mergeValues(...values) {
+	let result = ',';
+
+	values
+		.filter(v => v)
+		.forEach(v => result += toTwoValue(v));
+
+	return result;
+}
+
+export function getOptionName(str) {
+	return str.includes('-') ? str.split('-')[1] : str;
+}

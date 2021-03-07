@@ -57,7 +57,7 @@ export default class Test {
 		root.innerHTML = '';
 	}
 
-	insertRootHTML(html, root) {
+	insertHTML(html, root) {
 		root.insertAdjacentHTML('beforeend', html);
 	}
 
@@ -65,12 +65,13 @@ export default class Test {
 		events.forEach(e => root.addEventListener(e[0], e[1]));
 	}
 
-	renderElements({ bgw, bgh, bgx, bgy, repeat }, fn) {		
+	renderElements(fn, option) {
+		console.log(option('', 'bgx', 'bgy'));
 		this.elements.forEach(el => {
 			el.style.backgroundImage = fn();
-			el.style.backgroundSize = `${bgw}px ${bgh}px`;
-			el.style.backgroundPosition = `${bgx}px ${bgy}px`;
-			el.style.backgroundRepeat = repeat;
+			el.style.backgroundSize = option('', 'bgw', 'bgh');
+			el.style.backgroundPosition = option('', 'bgx', 'bgy');
+			el.style.backgroundRepeat = option('', 'repeat');
 		})
 	}
 }

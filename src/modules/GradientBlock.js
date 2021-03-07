@@ -1,8 +1,9 @@
 import ColorBlock from './ColorBlock.js';
 import { options, colorsOptions } from '../utils/config.js';
 import selectGradientOptions from './templates/templates.js';
-import { toCamelCase, mergeColors } from '../utils/functions.js';
+import { toCamelCase, mergeColors, mergeValues, getOptionName } from '../utils/functions.js';
 import typesHandler from '../utils/typesHandler.js';
+import { prevent, enter } from '../utils/eventHandlers.js';
 
 export default class GradientBlock {
 	constructor(root, tool) {
@@ -21,17 +22,20 @@ export default class GradientBlock {
 		this.clearColors();
 		this.addColor();
 		this.addColor();
+		this.addEvents();
+		this.renderChildern();
+	}
 
+	addEvents() {
 		if (!this.isInit) {
 			this.tool.addEvent([
 				['input', this.inputHandler.bind(this)],
 				['click', this.clickHandler.bind(this)],
-				['submit', e => e.preventDefault()]
+				['submit', prevent],
+				['keydown', enter]
 			], this.root);
 			this.isInit = true;
 		}
-
-		this.renderChildern();
 	}
 
 	clearColors() {
@@ -49,13 +53,12 @@ export default class GradientBlock {
 
 	renderChildern() {
 		this.tool.clearRoot(this.root);
-		this.tool.insertRootHTML(selectGradientOptions(this.options), this.root);
-
-		this.colors.forEach(g => this.tool.insertRootHTML(g.render(), this.root));
+		this.tool.insertHTML(selectGradientOptions(this.options), this.root);
+		this.colors.forEach(g => this.tool.insertHTML(g.render(), this.root));
 	}
 
 	renderElements() {
-		this.tool.renderElements(this.options, this.createGradient.bind(this));
+		this.tool.renderElements(this.getGradient.bind(this), this.getBackgroudOption.bind(this));
 	}
 
 	removeColor(id) {
@@ -66,21 +69,31 @@ export default class GradientBlock {
 		this.tool.removeGradient(this._id);
 	}
 
-	createGradient() {
-		let gradients = '';
-
+	getGradient(str = '') {
 		this.tool.gradients.forEach(g => {
 			const type = g.options.type;
 			const colors = mergeColors(g.colors);
 
-			gradients += typesHandler[type](g.options, colors);
+			str += typesHandler[type](g.options, colors);
 		});
 
-		return gradients.slice(1);
+		return str.slice(1);
+	}
+
+	getBackgroudOption(str = '', key1, key2 ) {
+		this.tool.gradients.forEach(g => {
+			const k1 = g.options[key1];
+			const k2 = g.options[key2];
+			const option = mergeValues(k1, k2);
+
+			str += option;
+		});
+
+		return str.slice(1);
 	}
 
 	changeOptions(idx, value){
-		const option = idx.includes('-') ? idx.split('-')[1] : idx;
+		const option = getOptionName(idx);
 
 		this.options[option] = value;
 
@@ -114,7 +127,7 @@ export default class GradientBlock {
 			});
 		}
 
-		if (dataset) {
+		if (dataset && !e.target.dataset.gradient) {
 			this.changeOptions(dataset, value);
 		}
 
