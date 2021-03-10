@@ -214,8 +214,8 @@ function options() {
     x: 0,
     y: 0,
     repeat: 'repeat',
-    bgh: 0,
-    bgw: 0,
+    bgh: '0',
+    bgw: '0',
     bgx: '0',
     bgy: '0',
     deg: 0,
@@ -453,6 +453,8 @@ exports.toCamelCase = toCamelCase;
 exports.mergeColors = mergeColors;
 exports.mergeValues = mergeValues;
 exports.getOptionName = getOptionName;
+exports.createElement = createElement;
+exports.copyToClipboard = copyToClipboard;
 
 function linearGradientStyle(_ref, colors) {
   var type = _ref.type,
@@ -501,27 +503,44 @@ function mergeColors(colorsArr) {
   return colorsStr;
 }
 
-var toTwoValue = function toTwoValue(v) {
-  return isNaN(+v) ? v + ' ' : v + 'px ';
-};
+function autoOrNot(v, key) {
+  return v || key === 'bgx' ? v + 'px ' : 'auto ';
+}
 
-function mergeValues() {
+function toTwoValue(v, key) {
+  return isNaN(+v) ? v + ' ' : autoOrNot(+v, key);
+}
+
+function mergeValues(key) {
   var result = ',';
 
-  for (var _len = arguments.length, values = new Array(_len), _key = 0; _key < _len; _key++) {
-    values[_key] = arguments[_key];
+  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    values[_key - 1] = arguments[_key];
   }
 
   values.filter(function (v) {
-    return v;
+    return v !== undefined && v !== null;
   }).forEach(function (v) {
-    return result += toTwoValue(v);
+    return result += toTwoValue(v, key);
   });
   return result;
 }
 
 function getOptionName(str) {
   return str.includes('-') ? str.split('-')[1] : str;
+}
+
+function createElement(el, id) {
+  var text = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var element = document.createElement(el);
+  element.id = id;
+  element.textContent = text;
+  return element;
+}
+
+function copyToClipboard(style) {
+  var css = style.split(';').join(';\n');
+  navigator.clipboard.writeText(css);
 }
 },{}],"../src/utils/typesHandler.js":[function(require,module,exports) {
 "use strict";
@@ -684,7 +703,7 @@ var GradientBlock = /*#__PURE__*/function () {
       this.tool.gradients.forEach(function (g) {
         var k1 = g.options[key1];
         var k2 = g.options[key2];
-        var option = (0, _functions.mergeValues)(k1, k2);
+        var option = (0, _functions.mergeValues)(key1, k1, k2);
         str += option;
       });
       return str.slice(1);
@@ -749,6 +768,8 @@ var _GradientBlock = _interopRequireDefault(require("./GradientBlock.js"));
 
 var _config = require("../utils/config.js");
 
+var _functions = require("../utils/functions.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -761,7 +782,7 @@ var Test = /*#__PURE__*/function () {
   function Test() {
     _classCallCheck(this, Test);
 
-    this.root = document.createElement('div');
+    this.root = (0, _functions.createElement)('div', 'gradienT');
     this.id = -1;
     this.gradients = [];
     this.elements = Array.from(document.querySelectorAll(_config.selector));
@@ -791,8 +812,7 @@ var Test = /*#__PURE__*/function () {
   }, {
     key: "addContainer",
     value: function addContainer() {
-      var container = document.createElement('div');
-      container.id = 'con-' + ++this.id;
+      var container = (0, _functions.createElement)('div', 'con' + ++this.id);
       this.root.append(container);
       return container;
     }
@@ -809,14 +829,23 @@ var Test = /*#__PURE__*/function () {
       });
     }
   }, {
+    key: "copyCSS",
+    value: function copyCSS(e) {
+      e.target.textContent = 'Copied!';
+      (0, _functions.copyToClipboard)(this.elements[0].getAttribute('style'));
+      setTimeout(function () {
+        return e.target.textContent = 'Copy CSS';
+      }, 1000);
+    }
+  }, {
     key: "createRoot",
     value: function createRoot() {
-      var addGradientBtn = document.createElement('button');
-      addGradientBtn.id = 'add-gradient';
-      addGradientBtn.textContent = 'Add Gradient';
+      var addGradientBtn = (0, _functions.createElement)('button', 'add-gradient', 'Add Gradient');
+      var copyCSSBtn = (0, _functions.createElement)('button', 'copy-css', 'Copy CSS');
+      this.root.append(copyCSSBtn);
       this.root.append(addGradientBtn);
       this.addEvent([['click', this.addGradient.bind(this)]], addGradientBtn);
-      this.root.id = 'gradienT';
+      this.addEvent([['click', this.copyCSS.bind(this)]], copyCSSBtn);
       document.body.append(this.root);
     }
   }, {
@@ -839,7 +868,6 @@ var Test = /*#__PURE__*/function () {
   }, {
     key: "renderElements",
     value: function renderElements(fn, option) {
-      console.log(option('', 'bgx', 'bgy'));
       this.elements.forEach(function (el) {
         el.style.backgroundImage = fn();
         el.style.backgroundSize = option('', 'bgw', 'bgh');
@@ -853,7 +881,7 @@ var Test = /*#__PURE__*/function () {
 }();
 
 exports.default = Test;
-},{"./GradientBlock.js":"../src/modules/GradientBlock.js","../utils/config.js":"../src/utils/config.js"}],"../src/index.js":[function(require,module,exports) {
+},{"./GradientBlock.js":"../src/modules/GradientBlock.js","../utils/config.js":"../src/utils/config.js","../utils/functions.js":"../src/utils/functions.js"}],"../src/index.js":[function(require,module,exports) {
 "use strict";
 
 var _Tool = _interopRequireDefault(require("./modules/Tool.js"));
@@ -889,7 +917,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "5821" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "9674" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
