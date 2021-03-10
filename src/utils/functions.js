@@ -41,14 +41,21 @@ export function mergeColors(colorsArr) {
 	return colorsStr;
 }
 
-const toTwoValue = (v) => isNaN(+v) ? v + ' ' : v + 'px ';
 
-export function mergeValues(...values) {
+function autoOrNot(v, key) {
+	return v || key === 'bgx' ? v + 'px ' : 'auto '; 
+}
+
+function toTwoValue(v, key) {
+	return isNaN(+v) ? v + ' ' : autoOrNot(+v, key);
+}
+
+export function mergeValues(key, ...values) {
 	let result = ',';
 
 	values
-		.filter(v => v)
-		.forEach(v => result += toTwoValue(v));
+		.filter(v => v !== undefined && v !== null)
+		.forEach(v => result += toTwoValue(v, key));
 
 	return result;
 }

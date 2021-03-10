@@ -66,7 +66,6 @@ export default class Test {
 	}
 
 	renderElements(fn, option) {
-		console.log(option('', 'bgx', 'bgy'));
 		this.elements.forEach(el => {
 			el.style.backgroundImage = fn();
 			el.style.backgroundSize = option('', 'bgw', 'bgh');

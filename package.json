@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel ./public/index.html --open"
+    "start": "parcel ./public/index.html --open",
+    "site": "parcel index.html --open"
   },
   "author": "",
   "license": "ISC"

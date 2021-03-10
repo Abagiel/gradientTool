@@ -84,7 +84,7 @@ export default class GradientBlock {
 		this.tool.gradients.forEach(g => {
 			const k1 = g.options[key1];
 			const k2 = g.options[key2];
-			const option = mergeValues(k1, k2);
+			const option = mergeValues(key1, k1, k2);
 
 			str += option;
 		});
