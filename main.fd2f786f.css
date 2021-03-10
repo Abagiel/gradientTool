@@ -1,0 +1,1 @@
+body{display:flex;margin:0}div{height:100vh;width:100%}#showSettings{position:fixed;top:0;right:0;display:none;height:100vh;width:20px;background:transparent;cursor:pointer;transition:background .3s}#showSettings:hover{background:rgba(0,0,0,.3)}#gradienT{position:static!important;max-width:300px;min-width:300px;transition:max-width .3s,min-width .3s}
