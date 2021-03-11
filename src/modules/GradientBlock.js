@@ -20,8 +20,7 @@ export default class GradientBlock {
 
 	init() {
 		this.clearColors();
-		this.addColor();
-		this.addColor();
+		this.initColors();
 		this.addEvents();
 		this.renderChildern();
 	}
@@ -36,6 +35,16 @@ export default class GradientBlock {
 			], this.root);
 			this.isInit = true;
 		}
+	}
+
+	initColors() {
+		if (this.colorsOptions.length) {
+			this.colorsOptions.forEach(this.addColor.bind(this));
+			return;
+		} 
+
+		this.addColor();
+		this.addColor();
 	}
 
 	clearColors() {

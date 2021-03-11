@@ -28,7 +28,7 @@ export default class Test {
 	}
 
 	addContainer() {
-		const container = createElement('div', 'con' + ++this.id);
+		const container = createElement('div', 'con-' + ++this.id);
 
 		this.root.append(container);
 
