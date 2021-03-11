@@ -627,8 +627,7 @@ var GradientBlock = /*#__PURE__*/function () {
     key: "init",
     value: function init() {
       this.clearColors();
-      this.addColor();
-      this.addColor();
+      this.initColors();
       this.addEvents();
       this.renderChildern();
     }
@@ -639,6 +638,17 @@ var GradientBlock = /*#__PURE__*/function () {
         this.tool.addEvent([['input', this.inputHandler.bind(this)], ['click', this.clickHandler.bind(this)], ['submit', _eventHandlers.prevent], ['keydown', _eventHandlers.enter]], this.root);
         this.isInit = true;
       }
+    }
+  }, {
+    key: "initColors",
+    value: function initColors() {
+      if (this.colorsOptions.length) {
+        this.colorsOptions.forEach(this.addColor.bind(this));
+        return;
+      }
+
+      this.addColor();
+      this.addColor();
     }
   }, {
     key: "clearColors",
@@ -812,7 +822,7 @@ var Test = /*#__PURE__*/function () {
   }, {
     key: "addContainer",
     value: function addContainer() {
-      var container = (0, _functions.createElement)('div', 'con' + ++this.id);
+      var container = (0, _functions.createElement)('div', 'con-' + ++this.id);
       this.root.append(container);
       return container;
     }
@@ -917,7 +927,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "5027" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "5227" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
