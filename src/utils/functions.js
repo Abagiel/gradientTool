@@ -63,3 +63,17 @@ export function mergeValues(key, ...values) {
 export function getOptionName(str) {
 	return str.includes('-') ? str.split('-')[1] : str;
 }
+
+export function createElement(el, id, text = '') {
+	const element = document.createElement(el);
+	element.id = id;
+	element.textContent = text;
+
+	return element;
+}
+
+export function copyToClipboard(style) {
+	const css = style.split(';').join(';\n');
+	
+	navigator.clipboard.writeText(css);
+}

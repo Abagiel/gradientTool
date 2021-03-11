@@ -1,9 +1,10 @@
 import GradientBlock from './GradientBlock.js';
 import { selector } from '../utils/config.js';
+import { copyToClipboard, createElement } from '../utils/functions.js';
 
 export default class Test {
 	constructor() {
-		this.root = document.createElement('div');
+		this.root = createElement('div', 'gradienT');
 		this.id = -1;
 		this.gradients = [];
 		this.elements = Array.from(document.querySelectorAll(selector));
@@ -27,8 +28,7 @@ export default class Test {
 	}
 
 	addContainer() {
-		const container = document.createElement('div');
-		container.id = 'con-' + ++this.id;
+		const container = createElement('div', 'con' + ++this.id);
 
 		this.root.append(container);
 
@@ -42,14 +42,22 @@ export default class Test {
 		this.gradients.forEach(gr => gr.init());
 	}
 
-	createRoot() {
-		const addGradientBtn = document.createElement('button');
-		addGradientBtn.id = 'add-gradient';
-		addGradientBtn.textContent = 'Add Gradient';
+	copyCSS(e) {
+		e.target.textContent = 'Copied!';
 
+		copyToClipboard(this.elements[0].getAttribute('style'));
+
+		setTimeout(() => e.target.textContent = 'Copy CSS', 1000);
+	}
+
+	createRoot() {
+		const addGradientBtn = createElement('button', 'add-gradient', 'Add Gradient');
+		const copyCSSBtn = createElement('button', 'copy-css', 'Copy CSS');
+
+		this.root.append(copyCSSBtn);
 		this.root.append(addGradientBtn);
 		this.addEvent([['click', this.addGradient.bind(this)]], addGradientBtn);
-		this.root.id = 'gradienT';
+		this.addEvent([['click', this.copyCSS.bind(this)]], copyCSSBtn);
 		document.body.append(this.root);
 	}
 

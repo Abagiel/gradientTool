@@ -71,7 +71,8 @@
 
 #gradienT #add-color,
 #gradienT #add-gradient,
-#gradienT #remove-gradient  {
+#gradienT #remove-gradient,
+#gradienT #copy-css  {
 	padding: 10px 20px;
 
 	
@@ -86,6 +87,10 @@
 }
 #gradienT #remove-gradient:hover {
 	background: hsl(0 50% 50%);
+	color: #fff;
+}
+#gradienT #copy-css:hover {
+	background: hsl(250 50% 40%);
 	color: #fff;
 }
 
