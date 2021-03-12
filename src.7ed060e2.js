@@ -132,10 +132,10 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var ColorBlock = /*#__PURE__*/function () {
-  function ColorBlock(id, options) {
+  function ColorBlock(options) {
     _classCallCheck(this, ColorBlock);
 
-    this.id = id;
+    this.id = options.id;
     this.color = options.color;
     this.degree = options.degree;
     this.opacity = options.opacity;
@@ -198,8 +198,9 @@ var _constants = require("./constants.js");
 var selector = '[data-gradient="gradienT"]';
 exports.selector = selector;
 
-function colorsOptions() {
+function colorsOptions(id) {
   return {
+    id: id,
     color: '#ffffff',
     opacity: 1,
     degree: 0
@@ -643,7 +644,7 @@ var GradientBlock = /*#__PURE__*/function () {
     key: "initColors",
     value: function initColors() {
       if (this.colorsOptions.length) {
-        this.colorsOptions.forEach(this.addColor.bind(this));
+        this.colorsOptions.forEach(this.pushToColors.bind(this));
         return;
       }
 
@@ -659,21 +660,28 @@ var GradientBlock = /*#__PURE__*/function () {
   }, {
     key: "addColor",
     value: function addColor() {
-      if (!this.colorsOptions[this.id + 1]) {
-        this.colorsOptions.push((0, _config.colorsOptions)());
-      }
+      var _this = this;
 
-      this.colors.push(new _ColorBlock.default(++this.id, this.colorsOptions[this.id]));
+      this.colorsOptions.push((0, _config.colorsOptions)(++this.id));
+      this.pushToColors(this.colorsOptions.find(function (i) {
+        return i.id === _this.id;
+      }));
+      console.log(this.colorsOptions);
+    }
+  }, {
+    key: "pushToColors",
+    value: function pushToColors(option) {
+      this.colors.push(new _ColorBlock.default(option));
     }
   }, {
     key: "renderChildern",
     value: function renderChildern() {
-      var _this = this;
+      var _this2 = this;
 
       this.tool.clearRoot(this.root);
       this.tool.insertHTML((0, _templates.default)(this.options), this.root);
       this.colors.forEach(function (g) {
-        return _this.tool.insertHTML(g.render(), _this.root);
+        return _this2.tool.insertHTML(g.render(), _this2.root);
       });
     }
   }, {
@@ -686,6 +694,9 @@ var GradientBlock = /*#__PURE__*/function () {
     value: function removeColor(id) {
       this.colors = this.colors.filter(function (gr) {
         return gr.id !== id;
+      });
+      this.colorsOptions = this.colorsOptions.filter(function (o) {
+        return o.id !== id;
       });
     }
   }, {
@@ -738,7 +749,7 @@ var GradientBlock = /*#__PURE__*/function () {
   }, {
     key: "inputHandler",
     value: function inputHandler(e) {
-      var _this2 = this;
+      var _this3 = this;
 
       var dataset = Object.values(e.target.dataset)[0];
       var value = e.target.value;
@@ -749,7 +760,7 @@ var GradientBlock = /*#__PURE__*/function () {
         this.colors.forEach(function (col, id) {
           if (col.id === idx) {
             col[type] = value;
-            _this2.colorsOptions[id][type] = value;
+            _this3.colorsOptions[id][type] = value;
           }
         });
       }
@@ -927,7 +938,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "12470" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "12852" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
