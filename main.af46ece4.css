@@ -1,6 +1,8 @@
 body {
 	display: flex;
 	margin: 0;
+
+	overflow: hidden;
 }
 
 div {
@@ -33,5 +35,55 @@ div {
 
 	transition: max-width .3s, min-width .3s;
 } 
+
+.move {
+	animation: move .5s ease-in-out;
+}
+
+.moveleft {
+	animation: moveleft .5s ease-in-out;
+}
+
+.fade {
+	animation: fade .3s ease-in-out;
+}
+
+@keyframes fade {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes move {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	50% {
+		transform: translateX(30px);
+	}
+
+	100% {
+		transform: translateX(0);
+	}
+}
+
+@keyframes moveleft {
+	0% {
+		transform: translateX(100%);
+	}
+
+	50% {
+		transform: translateX(-30px);
+	}
+
+	100% {
+		transform: translateX(0);
+	}
+}
 
 /*# sourceMappingURL=/main.af46ece4.css.map */

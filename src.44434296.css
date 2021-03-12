@@ -73,6 +73,8 @@
 #gradienT #add-gradient,
 #gradienT #remove-gradient,
 #gradienT #copy-css  {
+	position: relative;
+
 	padding: 10px 20px;
 
 	

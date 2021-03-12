@@ -124,12 +124,20 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.$ = $;
+exports.delClass = delClass;
 exports.stopPropagation = stopPropagation;
 exports.objectToCSS = objectToCSS;
 exports.wrapper = wrapper;
+exports.strToArr = strToArr;
+exports.getEventOptions = getEventOptions;
+exports.eventCondition = eventCondition;
 
 function $(selector) {
   return document.querySelector(selector);
+}
+
+function delClass(target, clas) {
+  target.classList.remove(clas);
 }
 
 function stopPropagation(e) {
@@ -162,7 +170,114 @@ function wrapper(selector, html) {
   moveDataFromChildToParent(container);
   return container;
 }
-},{}],"modules/src/modules/classes/HintBlocks.js":[function(require,module,exports) {
+
+function strToArr(str, point) {
+  return str.split(point);
+}
+
+function getEventOptions(data) {
+  var options = {};
+  options.event = data[0];
+  options.selector = data[1];
+  if (data.length <= 2) return options;
+  var keyData = data[2].split('=');
+  options.value = keyData;
+  return options;
+}
+
+function eventCondition(e, value) {
+  if (!value) return false;
+  var key = value[0];
+  return handlers["".concat(key, "Handler")](e, value);
+}
+
+var handlers = {
+  keyHandler: function keyHandler(e, value) {
+    var val = value[1];
+    if (e.key === val) return true;
+    return false;
+  },
+  coordHandler: function coordHandler(e, value) {
+    var coords = value[1].split(',');
+    var x = coords[0].split('-');
+    var y = coords[1].split('-');
+    var cx = e.clientX;
+    var cy = e.clientY;
+    if (cx >= x[0] && cx <= x[1] && cy >= y[0] && cy <= y[1]) return true;
+    return false;
+  }
+};
+},{}],"modules/src/modules/classes/AnimationBlock.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _functions = require("../../utils/functions.js");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var AnimationBlock = /*#__PURE__*/function () {
+  function AnimationBlock(startClass, endClass) {
+    _classCallCheck(this, AnimationBlock);
+
+    this.start = startClass;
+    this.end = endClass;
+  }
+
+  _createClass(AnimationBlock, [{
+    key: "shouldCancelAnimation",
+    value: function shouldCancelAnimation(callback) {
+      if (!this.start) {
+        if (callback) callback();
+        return;
+      }
+    }
+  }, {
+    key: "runStart",
+    value: function runStart(target) {
+      this.shouldCancelAnimation();
+      target.style.animationDirection = 'normal';
+      target.classList.add(this.start);
+      this.observer(target, 'end');
+    }
+  }, {
+    key: "runEnd",
+    value: function runEnd(target, callback) {
+      this.shouldCancelAnimation(callback);
+
+      if (this.end === this.start) {
+        target.style.animationDirection = 'reverse';
+      }
+
+      target.classList.add(this.end);
+      this.observer(target, 'end', callback);
+    }
+  }, {
+    key: "observer",
+    value: function observer(target, type, fn) {
+      var _this = this;
+
+      var ev = "animation".concat(type);
+
+      target["on".concat(ev)] = function (e) {
+        (0, _functions.delClass)(target, _this[type]);
+        if (fn) fn();
+      };
+    }
+  }]);
+
+  return AnimationBlock;
+}();
+
+exports.default = AnimationBlock;
+},{"../../utils/functions.js":"modules/src/utils/functions.js"}],"modules/src/modules/classes/HintBlocks.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -170,7 +285,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.HintBlock = void 0;
 
+var _AnimationBlock = _interopRequireDefault(require("./AnimationBlock.js"));
+
 var _functions = require("../../utils/functions.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -188,34 +307,38 @@ var HintBlock = /*#__PURE__*/function () {
 
     _classCallCheck(this, HintBlock);
 
-    _defineProperty(this, "show", function (e) {
+    _defineProperty(this, "show", function (value, e) {
       (0, _functions.stopPropagation)(e);
       if (_this.isVisible) return;
+      if (value && !(0, _functions.eventCondition)(e, value)) return;
 
       _this.root.append(_this.hint);
 
       _this.isVisible = true;
       ++_this.count;
 
+      _this.animation.runStart(_this.hint);
+
       _this.addTrigger(_this.hideOption, 'hide');
     });
 
-    _defineProperty(this, "hide", function (e) {
+    _defineProperty(this, "hide", function (value, e) {
       (0, _functions.stopPropagation)(e);
+      if (value && !(0, _functions.eventCondition)(e, value)) return;
 
-      _this.hint.remove();
+      _this.animation.runEnd(_this.hint, function () {
+        return _this.hint.remove();
+      });
 
       _this.isVisible = false;
-      if (_this.hideEvent) _this.hideEvent();
 
-      if (_this.showEvent && _this.count >= _this.limit) {
-        _this.showEvent();
-      }
+      _this.removeEvents();
     });
 
     this.root = option.root;
     this.hideOption = option.hide;
     this.showOption = option.show;
+    this.animation = new _AnimationBlock.default(option.start, option.end);
     this.hint = option.hint;
     this.limit = option.count || Infinity;
     this.count = 0;
@@ -225,22 +348,24 @@ var HintBlock = /*#__PURE__*/function () {
   }
 
   _createClass(HintBlock, [{
+    key: "removeEvents",
+    value: function removeEvents() {
+      if (this.hideEvent) this.hideEvent();
+
+      if (this.showEvent && this.count >= this.limit) {
+        this.showEvent();
+      }
+    }
+  }, {
     key: "addTrigger",
     value: function addTrigger(type, method) {
-      type = isNaN(+type) ? type : +type;
-
       if (typeof type === 'number') {
         this.actionByTime(this[method], type);
       }
 
-      if (typeof type === 'string') {
-        var ev = type.split(':')[0];
-        var selector = type.split(':')[1];
-        this.addEvent(ev, selector, this[method], method);
-      }
-
       if (_typeof(type) === 'object') {
-        this.addEvent(type[0], type[1], this[method], method);
+        var options = (0, _functions.getEventOptions)(type);
+        this.addEvent(options, this[method], method);
       }
     }
   }, {
@@ -250,14 +375,21 @@ var HintBlock = /*#__PURE__*/function () {
     }
   }, {
     key: "addEvent",
-    value: function addEvent(ev, selector, fn, type) {
+    value: function addEvent(_ref, fn, type) {
+      var event = _ref.event,
+          selector = _ref.selector,
+          value = _ref.value;
       var target = document.querySelector(selector);
 
-      this["".concat(type, "Event")] = function () {
-        return target.removeEventListener(ev, fn);
+      var func = function func(e) {
+        return fn(value, e);
       };
 
-      target.addEventListener(ev, fn);
+      this["".concat(type, "Event")] = function () {
+        target.removeEventListener(event, func);
+      };
+
+      target.addEventListener(event, func);
     }
   }]);
 
@@ -265,7 +397,7 @@ var HintBlock = /*#__PURE__*/function () {
 }();
 
 exports.HintBlock = HintBlock;
-},{"../../utils/functions.js":"modules/src/utils/functions.js"}],"modules/src/modules/classes/DefaultHint.js":[function(require,module,exports) {
+},{"./AnimationBlock.js":"modules/src/modules/classes/AnimationBlock.js","../../utils/functions.js":"modules/src/utils/functions.js"}],"modules/src/modules/classes/DefaultHint.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -313,7 +445,9 @@ var DefaultHint = /*#__PURE__*/function (_HintBlock) {
       root: (0, _functions.$)(option.root) || document.body,
       count: option.count,
       show: option.show,
-      hide: option.hide
+      hide: option.hide,
+      start: option.start,
+      end: option.end || option.start
     });
     _this.text = option.text;
     _this.styles = option.styles;
@@ -390,8 +524,10 @@ var ElementHint = /*#__PURE__*/function (_HintBlock) {
     _this = _super.call(this, {
       root: (0, _functions.$)(element.dataset.hinterRoot) || element.parentElement || document.body,
       count: element.dataset.hinterCount,
-      hide: element.dataset.hinterHide,
-      show: element.dataset.hinterShow,
+      hide: (0, _functions.strToArr)(element.dataset.hinterHide, ':'),
+      show: (0, _functions.strToArr)(element.dataset.hinterShow, ':'),
+      start: element.dataset.hinterStart,
+      end: element.dataset.hinterEnd || element.dataset.hinterStart,
       hint: element
     });
 
@@ -478,35 +614,38 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.hints = void 0;
 var hints = [{
-  count: 1,
-  show: ['click', 'body'],
-  hide: ['click', 'body'],
-  text: 'Move cursor to right border to show open settings button',
+  show: 1000,
+  hide: 3000,
+  start: 'move',
+  text: 'Hello, it is Gradient Tool!',
   styles: {
-    height: 'auto',
+    top: '10px',
+    left: '10px',
     width: 'auto',
-    top: '20px',
-    right: '20px'
+    height: 'auto'
   }
 }, {
-  show: 1000,
-  hide: ['click', 'body'],
-  text: 'Click on gradient block to close settings',
+  show: 2000,
+  hide: 3000,
+  start: 'move',
+  text: 'Click on gradient block to close gradient settings',
   styles: {
-    height: 'auto',
-    width: 'auto',
-    top: '20px',
-    left: '20px'
-  }
-}, {
-  show: 1000,
-  hide: ['click', 'body'],
-  text: 'Click anywhere to close hints',
-  styles: {
-    height: 'auto',
-    width: 'auto',
     top: '60px',
-    left: '20px'
+    left: '10px',
+    width: 'auto',
+    height: 'auto'
+  }
+}, {
+  count: 1,
+  show: ['click', '[data-gradient="gradienT"]'],
+  hide: ['mousemove', '#showSettings'],
+  start: 'moveleft',
+  text: 'Click on block in right border to open settings',
+  styles: {
+    top: '10px',
+    right: '10px',
+    width: 'auto',
+    height: 'auto'
   }
 }];
 exports.hints = hints;
@@ -548,7 +687,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "5227" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "12470" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
