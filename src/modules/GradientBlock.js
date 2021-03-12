@@ -39,7 +39,7 @@ export default class GradientBlock {
 
 	initColors() {
 		if (this.colorsOptions.length) {
-			this.colorsOptions.forEach(this.addColor.bind(this));
+			this.colorsOptions.forEach(this.pushToColors.bind(this));
 			return;
 		} 
 
@@ -53,11 +53,13 @@ export default class GradientBlock {
 	}
 
 	addColor() {
-		if (!this.colorsOptions[this.id + 1]) {
-			this.colorsOptions.push(colorsOptions());
-		}
-		
-		this.colors.push(new ColorBlock(++this.id, this.colorsOptions[this.id]));
+		this.colorsOptions.push(colorsOptions(++this.id));
+		this.pushToColors(this.colorsOptions.find(i => i.id === this.id));
+		console.log(this.colorsOptions);
+	}
+
+	pushToColors(option) {
+		this.colors.push(new ColorBlock(option));
 	}
 
 	renderChildern() {
@@ -72,6 +74,7 @@ export default class GradientBlock {
 
 	removeColor(id) {
 		this.colors = this.colors.filter(gr => gr.id !== id);
+		this.colorsOptions = this.colorsOptions.filter(o => o.id !== id);
 	}
 
 	removeGradient() {

@@ -1,8 +1,9 @@
 import { GRADIENT_LINEAR, CIRCLE_SHAPE } from './constants.js'; 
 
 export const selector = '[data-gradient="gradienT"]';
-export function colorsOptions() {
+export function colorsOptions(id) {
 	return {
+		id,
 		color: '#ffffff',
 		opacity: 1,
 		degree: 0,

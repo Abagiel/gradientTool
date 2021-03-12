@@ -1,6 +1,6 @@
 export default class ColorBlock {
-	constructor(id, options) {
-		this.id = id;
+	constructor(options) {
+		this.id = options.id;
 		this.color = options.color;
 		this.degree = options.degree;
 		this.opacity = options.opacity;
